@@ -1,6 +1,6 @@
 clear;
 %% parameters
-n = 100000;
+n = 10;
 a1 = ones(1,n);
 a2 = -a1;
 tau = 100; % whatever
@@ -50,7 +50,7 @@ for k=1:m
 
     obj = @(x) alpha(1)*sum((x-1).^2) + ... 
                alpha(2)*sum((x+1).^2);
-    %x_new  = fminunc(obj,p);
+    x_new  = fminunc(obj,p);
 
     %opts = optimoptions('fmincon', ...
     %    'Algorithm','interior-point', ...
@@ -58,8 +58,8 @@ for k=1:m
     %    'Display','iter');
     %x_new = fmincon(obj,p,[],[],[],[],[],[],[],opts);
 
-    c     = alpha(1) - alpha(2);   % λ1 − λ2      ∈ [−1,1]
-    x_new = c * ones(1,n); 
+    %c     = alpha(1) - alpha(2);   
+    %x_new = c * ones(1,n); 
 
     Jnew = [x_new-a1; x_new-a2];
     res  = norm(Jnew.' * u2_p);
