@@ -1,9 +1,48 @@
-n     = 1e5;
-w_vec = linspace(0,1,10)';
-t_vec = 2*w_vec - 1;              
-f1    = n*(t_vec - 1).^2;
-f2    = n*(t_vec + 1).^2;
+clear;
+n = 10;
+a1 = ones(1,n);
+a2 = -a1;
+x = 0.99*a1;
+J = [x-a1;x-a2]; % J is 2xn
 
-plot(f1,f2,'o-');  grid on;
-xlabel('f_1'); ylabel('f_2');
+[U,S,V] = svds(J,2);
+
+u1 = U(:,1);
+u2 = U(:,2); 
+v1 = V(:,1);
+s1 = S(1,1);
+
+fprintf('value of x:\n');
+disp(x)
+fprintf('direction:\n');
+disp(u1)
+fprintf('alpha:\n');
+disp(u2)
+fprintf('v1:\n');
+disp(v1)
+
+tau = 10;
+t = tau/s1;
+
+p = x + (t * u1(1)) * v1';        % (1×10)
+
+
+Jp = [p-a1;p-a2];
+
+[U_p, S_p, V_p] = svds(Jp, 2);
+u1_p = U_p(:, 1);
+u2_p = U_p(:, 2);
+v1_p = V_p(:, 1);
+s1_p = S_p(1, 1);
+fprintf('value of p:\n');
+disp(p) 
+fprintf('direction_p:\n');
+disp(u1_p)
+fprintf('alpha_p:\n'); disp(u2_p)
+disp(v1_p)
+disp(s1_p)
+
+
+
+
 
