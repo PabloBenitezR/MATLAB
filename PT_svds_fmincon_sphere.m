@@ -34,7 +34,7 @@ for k = 1:m
     [Up,~,~]    = svds(Jp,2);
     u2p   = Up(:,2);
     alpha = sign(u2p(2)) * u2p / norm(u2p,1);
-    if min(alpha) < 0,    break,   end
+    %if min(alpha) < 0,    break,   end
 
     % new x
     x = fmincon(@(y)obj_and_grad(y,alpha,a1,a2), ...
