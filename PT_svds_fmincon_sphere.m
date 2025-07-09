@@ -45,7 +45,6 @@ for k = 1:m
 end
 elapsed = toc;
 %F = F(1:k+1,:);   
-F
 
 figure
 plot(F(:,1),F(:,2),'o-','LineWidth',1.3);
