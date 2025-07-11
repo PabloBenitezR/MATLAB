@@ -10,7 +10,7 @@ ub =  ones(1, n);
 x  = [1 1 zeros(1,n-2)];   
 x  = x / norm(x); 
 %F  = zeros(m +1, 2);      
-F(1,:) = [sum((x - 1).^2), sum((x + 1).^2)];
+F(1,:) = [sum((x - 1).^4)];
 
 opts = optimoptions('fmincon', ...
     'Algorithm',            'interior-point', ...  
@@ -41,13 +41,13 @@ for k = 1:m
                 p, [],[],[],[], lb, ub, @sphere_constr, opts);
 
     
-    F(k + 1, :) = [sum((x - 1).^2), sum((x + 1).^2)];
+    F(k + 1, :) = [sum((x - 1).^4)];
 end
 elapsed = toc;
 %F = F(1:k+1,:);   
 
 figure
-plot(F(:,1),F(:,2),'o-','LineWidth',1.3);
+plot(F(:,1),'o-','LineWidth',1.3);
 grid on, axis square
 xlabel('f_1'), ylabel('f_2')
 title(sprintf('PF with fmincon  (n=%d, iters=%d)', n, k))
