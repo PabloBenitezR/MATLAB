@@ -15,9 +15,15 @@ ub =  ones(1, n);
 x = a3; 
 %F  = zeros(m +1, 2);  
 %X_tracer = zeros(m+1,n);
-f1 = (x(1) - a1(1))^4 + (x(2) - a2(2))^2;   
-f2 = (x(1) - a1(1))^2 + (x(2) - a2(2))^4;   
+f1 = (x(1) - a1).^4 + (x(2) - a2).^2;   
+f2 = (x(1) - a1).^2 + (x(2) - a2).^4;   
 F(1,:) = [f1 , f2];
+
+disp(f1)
+disp(f2)
+fprintf('F(1,:)=') 
+disp(F(1,:))
+
 X_tracer(1,:) = x;
 fprintf('x=')
     disp(x)
@@ -30,23 +36,36 @@ opts = optimoptions('fmincon', ...
     'Display',               'none');
 
 tic
+%m = 100;
 for k = 1:m
-    J = [x - a1; x - a2];
+
+    grad1 = 4*(x(1) - a1).^3 + 2*(x(2) - a2);
+    grad2 = 2*(x(1) - a1) + 4*(x(2) - a2).^3;
+    %grad1 = [4 * dx1 2 * dx2];
+    %grad2 = [2 * dx2 4 * dx2];
+    J = [grad1' grad2'];
+    %disp(J)
+
     [U,~,V] = svds(J, 2);
     v1  = V(:,1);
     nom  = norm(J*v1);
     %t   = tau / norm(J*v1);
-    d   = -sign(U(2,1));  
+    d   = -sign(U(2,1)); 
+    %disp(d)
+
+    %tau = 0.1;
     max_step = 0.2;
+
     t  = min(tau/nom, max_step);
     p   = x + (t * d) * v1';   
     %p = p / norm(p);
-    
-    
-
-
+    %disp (p)
     %Jp
-    Jp          = [p - a1; p - a2];
+
+    gradp1 = 4*(p(1) - a1).^3 + 2*(p(2) - a2);
+    gradp2 = 2*(p(1) - a1) + 4*(p(2) - a2).^3;
+
+    Jp          = [gradp1' gradp2'];
     [Up,~,~]    = svds(Jp,2);
     u2p   = Up(:,2);
     alpha = sign(u2p(2)) * u2p / norm(u2p,1);
@@ -57,19 +76,20 @@ for k = 1:m
                 p, [],[],[],[], lb, ub, @sphere_constr, opts);
     fprintf('\nIter %3d\n', k);
 
-fprintf('   v1     = %s\n', mat2str(v1 , 6));          % 6-dec-digit vector
-fprintf('   t      = %.4e\n', t);
-fprintf('   tau    = %.2f\n', tau);
+%fprintf('   v1     = %s\n', mat2str(v1 , 6));          % 6-dec-digit vector
+%fprintf('   t      = %.4e\n', t);
+%fprintf('   tau    = %.2f\n', tau);
 
-fprintf('   p      = %s\n', mat2str(p , 6));
+%fprintf('   p      = %s\n', mat2str(p , 6));
 fprintf('   alpha  = %s\n', mat2str(alpha , 6));
 
 fprintf('   x_new  = %s\n', mat2str(x , 6));
 
     
-    f1 = (x(1) - a1(1))^4 + (x(2) - a2(2))^2;   
-    f2 = (x(1) - a1(1))^2 + (x(2) - a2(2))^4;   
+    f1 = (x(1) - a1).^4 + (x(2) - a2).^2;   
+    f2 = (x(1) - a1).^2 + (x(2) - a2).^4;   
     F(k+1,:) = [f1 , f2];
+    
     X_tracer(k+1,:) = x;
 end
 elapsed = toc;
@@ -122,7 +142,8 @@ end
 
 
 function [f,g] = obj_and_grad(x,alpha,a1,a2)
-d1=x-a1; d2=x-a2;
+d1=x-a1; 
+d2=x-a2;
 f  = alpha(1)*sum(d1.^2)+alpha(2)*sum(d2.^2);
 g  = (2*alpha(1)*d1 + 2*alpha(2)*d2).';   % ¡vector-columna!
 end
